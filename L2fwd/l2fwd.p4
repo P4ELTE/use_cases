@@ -63,8 +63,8 @@ table dmac {
 
 control ingress {
     apply(smac);
+    apply(dmac);
 }
 
 control egress {
-	apply(dmac);
 }
