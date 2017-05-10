@@ -8,10 +8,16 @@
 action mac_learn() {
     generate_digest(MAC_LEARN_RECEIVER, mac_learn_digest);
 }
+	action arp_learn() {
+    generate_digest(ARP_RECEIVER, arp_digest);
+}
 action _nop() {
 }
+action _nop1() {
+		return egress;
+}
 action _drop() {
-    drop();
+		drop();
 }
 
 action forward(port) {
@@ -47,8 +53,10 @@ table dmac {
         ethernet.dstAddr : exact;
     }
     actions {
+	forward;
+	bcast;
 	_drop; 
-	_nop;
+	_nop1; /* return egress */
 	/* brodcast and fwd port */
 	/*  send to CP */
 	}
@@ -59,7 +67,7 @@ table arp_select {
 		ethernet.etherType : exact ;
 	}
 	actions {
-		/* send to cp*/
+		arp_learn;
 		_nop;
 		_drop; /* incase Eth type is diffrent */
 	}
@@ -71,6 +79,7 @@ table ipv4_lpm {
 }
 	actions {
 		nxt_hop;
+		_drop;
 }
 size : 65536;
 }
@@ -86,13 +95,13 @@ table egress_table {
 }
 /* Flow Functions */
 control ingress {
-
     apply(smac);
-	apply(dmac);
+	apply(dmac); /* _nop1 function just call the egress  flow control incase niether " _drop, forward nor bcast" functions are sselected */ 
+	}
+control egress{
 	apply(arp_select);
-	/* apply ( egress_table ) ; */
-}                                                    /*  why we need two control flows?? */ 
-control egress {
-	apply ( egress_table ) ;
-
+		if (ethernet.etherType == 0x0800) {
+				apply (ipv4_lpm);
+				}
 }
+	/* apply ( egress_table ) ; */

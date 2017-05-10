@@ -12,14 +12,11 @@ parser start {
 }
 parser parse_ipv4 {
 	extract ( ipv4 ) ;
-		return select() {
-		default : ingress ;
+		return ingress
 		}
 }
 parser parse_arp {
 	extract ( arp ) ;
-		return select() {
-		default : ingress ;
-		/* return ingress;*/
+		return ingress;
 		}
 }

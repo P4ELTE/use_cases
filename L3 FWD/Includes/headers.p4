@@ -35,7 +35,7 @@ header_type arp_t {
 		protocol_type : 16;
 		HLEN          : 8;   /* hardware address length */
 		PLEN          : 8;   /* protocol address length */
-		/* operation  OPER   : 16; */
+		OPER          : 16; 
 		sender_ha     : 48;  /* ha = hardware address */ 
 		sender_ip     : 32;
 		target_ha     : 48;
@@ -43,25 +43,13 @@ header_type arp_t {
     }
 }
 
-header_type ingress_metadata_t {
-	fields {
-/* Inputs */
-		ingress_port          : 9; /* Available prior to parsing */
-		packet_length         : 16; /* Might not be always available */
-		instance_type         : 2; /* Normal, clone, recirculated */
-		ingress_global_tstamp : 48;
-		parser_status         : 8; /* Parsing Error */
-/* Outputs from Ingress Pipeline */
-		egress_spec           : 16;
-		queue_id              : 9;
-}
-}	
+
 	   
 /* Instances */
 header ethernet_t ethernet ;
 header ipv4_t ipv4 ;
 header arp_t arp ;
-metadata ingress_metadata_t ingress_metadata ;
+
 /* Field List */
 
 field_list ipv4_checksum_list {
@@ -79,13 +67,25 @@ field_list ipv4_checksum_list {
 }
 
 #define MAC_LEARN_RECEIVER 1024
+#define ARP_RECEIVER 1024
 
 field_list mac_learn_digest {
     ethernet.srcAddr;
 	standard_metadata.ingress_port;
 
 }
-
+field_list arp_digest {
+		arp.hardware_type ;
+		arp.protocol_type;
+		arp.HLEN          ;
+		arp.PLEN          ;
+		arp.OPER           ;
+		arp.sender_ha     ;
+		arp.sender_ip    ;
+		arp.target_ha    ;
+		arptarget_ip     ;
+   
+}
 /* Checksums */
 
 
