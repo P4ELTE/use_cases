@@ -26,7 +26,7 @@ header_type ipv4_t {
 		options        : * ;
 		
     }
-	Length             : (ihl << 2) ;
+	length             : (ihl << 2) ;
     max_length         : 60 ;
 }
 header_type arp_t {
