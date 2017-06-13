@@ -28,7 +28,8 @@ action nxt_hop (port, s_mac, d_mac ) {
 	modify_field(standard_metadata.egress_port, port);
 	modify_field(ethernet.srcAddr, s_mac);
 	modify_field(ethernet.dstAddr, d_mac);
-	modify_field(ipv4.ttl, ipv4.ttl – 1);  
+	 
+	subtract_from_field(ipv4.ttl , 1);
 }
 action bcast() {
     modify_field(standard_metadata.egress_port, 100);
