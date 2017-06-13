@@ -1,7 +1,7 @@
 /* includes*/ 
 
-#include 'Includes.headers.p4'
-#include 'Includes.parser.p4'
+#include "Includes/headers.p4"
+#include "Includes/parser.p4"
 
 /* ACTIONS */
 
@@ -27,9 +27,9 @@ action forward(s_mac, port) {
 action set_dmac (d_mac){
 	modify_field(ethernet.dstAddr, d_mac);
 	}
-action save_nxt_hop (port) {
+action save_nxt_hop (nexthop) {
 
-	modify_field(standard_metadata.egress_port, port);
+	modify_field(local_metadata.nexthop , nexthop);
 	modify_field(ipv4.ttl, ipv4.ttl – 1);  
 }
 
@@ -60,7 +60,7 @@ table dmac {
 	forward;
 	bcast;
 	_drop; 
-	_nop1; /* return egress */
+	_nop; /* return egress */
 	/* brodcast and fwd port */
 	/*  send to CP */
 	}
@@ -89,7 +89,7 @@ size : 65536;
 }
 table arp_table {
 	reads {
-			standard_metadata.egress_port : exact ;
+			local_metadata.nexthop : exact ;
 	}
 	actions {
 			set_dmac;
