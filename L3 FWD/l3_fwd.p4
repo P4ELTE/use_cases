@@ -39,7 +39,7 @@ action bcast() {
 /* Tables */ 
 table smac {
     reads {
-		standard_metadata_metadata.ingress_port : exact;
+		standard_metadata.ingress_port : exact;
 		/* ingress_metadata.ingress_port : exact; */
         ethernet.srcAddr : exact;
     }
