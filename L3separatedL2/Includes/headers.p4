@@ -26,7 +26,7 @@ header_type ipv4_t {
 		options        : * ;
 		
     }
-	Length             : (ihl << 2) ;
+	length             : (ihl << 2) ;
     max_length         : 60 ;
 }
 header_type arp_t {
@@ -42,13 +42,17 @@ header_type arp_t {
 		target_ip     : 32;
     }
 }
-
+header_type local_metadata_t {
+fields {
+nexthop : 16 ;
+}}
 
 	   
 /* Instances */
 header ethernet_t ethernet ;
 header ipv4_t ipv4 ;
 header arp_t arp ;
+metadata local_metadata_t local_metadata ;
 
 /* Field List */
 

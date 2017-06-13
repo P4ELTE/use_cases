@@ -30,7 +30,7 @@ action set_dmac (d_mac){
 action save_nxt_hop (nexthop) {
 
 	modify_field(local_metadata.nexthop , nexthop);
-	modify_field(ipv4.ttl, ipv4.ttl – 1);  
+	subtract_from_field(ipv4.ttl , 1); 
 }
 
 action bcast(s_mac) {

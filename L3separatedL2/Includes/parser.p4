@@ -11,9 +11,9 @@ parser start {
 }
 parser parse_ipv4 {
 	extract ( ipv4 ) ;
-		return ingress
+		return ingress ;
 		}
-}
+		
 parser parse_arp {
 	extract ( arp ) ;
 		return ingress;
