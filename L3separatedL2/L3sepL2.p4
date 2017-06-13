@@ -13,10 +13,10 @@ action arp_learn() {
 }
 action _nop() {
 }
-action _nop1(s_mac) {
+/* action _nop1(s_mac) {
 		modify_field(ethernet.srcAddr, s_mac);
-		return egress;
-}
+		
+}*/
 action _drop() {
 		drop();
 }
