@@ -83,7 +83,7 @@ field_list arp_digest {
 		arp.sender_ha     ;
 		arp.sender_ip    ;
 		arp.target_ha    ;
-		arptarget_ip     ;
+		arp.target_ip     ;
    
 }
 /* Checksums */
