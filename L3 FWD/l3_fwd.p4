@@ -13,9 +13,9 @@ action mac_learn() {
 }
 action _nop() {
 }
-action _nop1() {
+/*action _nop1() {
 		return egress;
-}
+}*/
 action _drop() {
 		drop();
 }
@@ -56,7 +56,7 @@ table dmac {
 	forward;
 	bcast;
 	_drop; 
-	_nop1; /* return egress */
+	_nop; /* return egress */
 	/* brodcast and fwd port */
 	/*  send to CP */
 	}
@@ -83,7 +83,7 @@ table ipv4_lpm {
 }
 size : 65536;
 }
-table egress_table {
+/*table egress_table {  not needed
 	reads {
 		ethernet.dstAddr : exact;
 	}
@@ -92,16 +92,19 @@ table egress_table {
 		bcast; 
 		}
 	size : 512;
-}
+}*/
 /* Flow Functions */
 control ingress {
     apply(smac);
-	apply(dmac); /* _nop1 function just call the egress  flow control incase niether " _drop, forward nor bcast" functions are sselected */ 
-	}
-control egress{
-	apply(arp_select);
-		if (ethernet.etherType == 0x0800) {
-				apply (ipv4_lpm);
+	apply(dmac) {
+		_nop { apply(arp_select);
+		         if (ethernet.etherType == 0x0800) {
+				      apply (ipv4_lpm);
 				}
+			}
+				}
+				}
+control egress {
+	
 }
 	/* apply ( egress_table ) ; */
