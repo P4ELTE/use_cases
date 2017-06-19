@@ -69,7 +69,10 @@ table vrf_select {
 	reads {
 	vlan.vid : exact ;
 	}
-	/* set the virtual port nbr */
+	actions {
+	 
+	_nop; 
+	}/* set the virtual port nbr */
 }
 table arp_select {
 	reads {
@@ -80,6 +83,7 @@ table arp_select {
 		_nop;
 		_drop; /* incase Eth type is diffrent */
 	}
+	
 }
 table ipv4_lpm {
 	reads {
