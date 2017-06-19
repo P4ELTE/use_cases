@@ -56,7 +56,9 @@ nexthop : 16 ;
 
 	   
 /* Instances */
+
 header ethernet_t ethernet ;
+
 header vlan_t vlan ; 
 header ipv4_t ipv4 ;
 header arp_t arp ;

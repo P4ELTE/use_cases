@@ -1,5 +1,5 @@
 parser start {
-	extract( ethernet) ;
+	extract(ethernet) ;
 		return select(latest.etherType) {
 			0x8100 , 0x9100 :  parse_vlan ;
 			0x0806  		: parse_arp ;
