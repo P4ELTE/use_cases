@@ -61,13 +61,13 @@ header_type arp_t {
 header_type local_metadata_t {
 fields {
 nexthop : 16 ;
-}}
+} }
 
 	   
 /* Instances */
 
 header ethernet_t ethernet ;
-header vlan_t vlan ; 
+header vlan_t vlan [2] ; 
 header ipv4_t ipv4 ;
 header arp_t arp ;
 metadata local_metadata_t local_metadata ;
@@ -107,6 +107,7 @@ field_list arp_digest {
 		arp.sender_ip    ;
 		arp.target_ha    ;
 		arp.target_ip     ;
+		vlan.vid ;
    
 }
 /* Checksums */
@@ -141,7 +142,7 @@ parser start {
 }
 }
 parser parse_vlan {
-	extract(vlan) ;
+	extract(vlan[next]) ;
 		return select(latest.ethertype) {
 			0x8100 , 0x9100 :  parse_vlan ;
 			0x0806          : parse_arp ;
@@ -202,7 +203,7 @@ table smac {
 		/*standard_metadata.ingress_port : exact;
 		/* ingress_metadata.ingress_port : exact; */
         ethernet.srcAddr : exact ;
-		vlan.vid         : exact ;
+		vlan    : valid ; /*check!!!! p4 16*/ /* if vlan is valid than read vid */
     }
     actions {
 	mac_learn; /* contacts to CP through the digesst*/ 
@@ -222,7 +223,7 @@ table dmac {
 	}
     size : 512;
 }
-table vrf_select {
+/*table vrf_select {
 	reads {
 	vlan.vid : exact ;
 	}
@@ -230,7 +231,7 @@ table vrf_select {
 	 
 	_nop; 
 	}/* set the virtual port nbr */
-}
+}*/
 table arp_select {
 	reads {
 		ethernet.etherType : exact ;
