@@ -17,7 +17,7 @@ action arp_learn() {
     generate_digest(ARP_RECEIVER, arp_digest);
 }
 action forward(s_mac, port) {
-	modify_field(ethernet.srcAddr, s_mac);
+	modify_field(ethernet1.srcAddr, s_mac);
     modify_field(standard_metadata.egress_port, port);
 }
 
@@ -28,7 +28,7 @@ action forward(s_mac, port) {
 
 
 action set_dmac (d_mac){
-	modify_field(ethernet.dstAddr, d_mac);
+	modify_field(ethernet1.dstAddr, d_mac);
 	}
 action save_nxt_hop (nexthop) {
 
@@ -44,7 +44,7 @@ table smac {
     reads {
 		/*standard_metadata.ingress_port : exact;
 		/* ingress_metadata.ingress_port : exact; */
-        ethernet.srcAddr : exact ;
+        ethernet1.srcAddr : exact ;
 		vlan.vid         : exact ;
     }
     actions {
@@ -55,7 +55,7 @@ table smac {
 }
 table dmac {
     reads {
-        ethernet.dstAddr : exact;
+        ethernet1.dstAddr : exact;
 		vlan.vid : exact ;
     }
     actions {
@@ -76,7 +76,7 @@ table vrf_select {
 }
 table arp_select {
 	reads {
-		ethernet.etherType : exact ;
+		ethernet1.etherType : exact ;
 	}
 	actions {
 		arp_learn;
@@ -111,7 +111,7 @@ control ingress {
 	apply(dmac) {
 		_nop {  apply (vrf_select) ;
 				apply (arp_select) ;
-		         if (ethernet.etherType == 0x0800) {
+		         if (ethernet1.etherType == 0x0800) {
 				      apply (ipv4_lpm) ;
 					  apply ( arp_table) ;
 					  apply(dmac) ;
