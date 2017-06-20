@@ -57,7 +57,7 @@ nexthop : 16 ;
 	   
 /* Instances */
 
-header ethernet_t ethernet1 ;
+header ethernet_t ethernet ;
 
 header vlan_t vlan ; 
 header ipv4_t ipv4 ;
@@ -84,7 +84,7 @@ field_list ipv4_checksum_list {
 #define ARP_RECEIVER 1024
 
 field_list mac_learn_digest {
-    ethernet1.srcAddr;
+    ethernet.srcAddr;
 	standard_metadata.ingress_port;
 
 }
