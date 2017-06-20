@@ -266,7 +266,7 @@ table arp_table {
 control ingress {
     apply(smac);
 	apply(dmac) {
-		_nop {  apply (vrf_select) ;
+		_nop {  /*apply (vrf_select) ;*/
 				apply (arp_select) ;
 		         if (ethernet.etherType == 0x0800) {
 				      apply (ipv4_lpm) ;
