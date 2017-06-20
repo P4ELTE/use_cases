@@ -230,8 +230,8 @@ table dmac {
 	actions {
 	 
 	_nop; 
-	}/* set the virtual port nbr */
-}*/
+	}/* set the virtual port nbr  * 
+} */
 table arp_select {
 	reads {
 		ethernet.etherType : exact ;
@@ -240,8 +240,7 @@ table arp_select {
 		arp_learn;
 		_nop;
 		_drop; /* incase Eth type is diffrent */
-	}
-	
+	}	
 }
 table ipv4_lpm {
 	reads {
