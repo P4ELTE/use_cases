@@ -1,6 +1,4 @@
-parser start {
 
-}
 parser parse_vlan {
 	extract(vlan) ;
 		return select(latest.ethertype) {
