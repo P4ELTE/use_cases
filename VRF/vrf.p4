@@ -252,6 +252,7 @@ table ipv4_lpm {
 		_nop;
 }
 size : 65536;
+
 }
 table arp_table {
 	reads {
