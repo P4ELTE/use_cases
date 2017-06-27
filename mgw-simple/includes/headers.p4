@@ -168,58 +168,5 @@ header_type udp_t {
 }
 
 
-	   
-/* Instances */
-header ethernet_t ethernet ;
-header ipv4_t ipv4 ;
-header arp_t arp ;
 
-/* Field List */
-
-field_list ipv4_checksum_list {
-		ipv4.version;
-		ipv4.ihl;
-		ipv4.diffserv;
-		ipv4.totalLen;
-		ipv4.identification;
-		ipv4.flags;
-		ipv4.fragOffset;
-		ipv4.ttl;
-		ipv4.protocol;
-		ipv4.srcAddr;
-		ipv4.dstAddr;
-}
-
-#define MAC_LEARN_RECEIVER 1024
-#define ARP_RECEIVER 1024
-
-field_list mac_learn_digest {
-    ethernet.srcAddr;
-	standard_metadata.ingress_port;
-
-}
-field_list arp_digest {
-		arp.hardware_type ;
-		arp.protocol_type;
-		arp.HLEN          ;
-		arp.PLEN          ;
-		arp.OPER           ;
-		arp.sender_ha     ;
-		arp.sender_ip    ;
-		arp.target_ha    ;
-		arp.target_ip     ;
-   
-}
-/* Checksums */
-
-
-field_list_calculation ipv4_checksum {
-input { ipv4_checksum_list; }
-algorithm : csum16;
-output_width : 16;
-}
-calculated_field ipv4.hdrChecksum {
-verify ipv4_checksum;
-update ipv4_checksum;
-}
 
