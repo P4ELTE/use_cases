@@ -16,6 +16,7 @@
 #define GTP_UDP_PORT		2152
 #define GW_IP				10.0.0.1
 
+
 /* Header instances */
 
 header ethernet_t ethernet;
@@ -30,6 +31,11 @@ header gtpv1Optional_t gtpv1Optional;
 header gtpv1ExtensionHdr_t gtpv1ExtensionHdr;
 header gtpv2Ending_t gtpv2Ending;
 header udp_t udp;
+
+/* Metadata instances */ 
+
+metadata gtpMetadata_t gtpMetadata;
+metadata arpMetadata_t arpMetadata;
 
 /* Parsing */
 
@@ -59,6 +65,12 @@ parser parse_ipv4 {
 
 parser parse_arp {
 	extract ( arp ) ;
+	
+	set_metadata( arpMetadata.ethSrc, ethernet.srcAddr );
+	set_metadata( arpMetadata.senderHA, latest.senderHA );
+	set_metadata( arpMetadata.senderIP, latest.senderIP );
+	set_metadata( arpMetadata.targetHA, latest.targetHA );
+	set_metadata( arpMetadata.targetIP, latest.targetIP );
 	return ingress;
 }
 

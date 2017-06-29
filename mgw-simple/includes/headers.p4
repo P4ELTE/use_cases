@@ -28,7 +28,7 @@ header_type ipv4_t {
         version        : 4 ;
         ihl            : 4 ;
         diffserv       : 8 ;
-        totalLen       : 16 ;
+        totalLength    : 16 ;
         identification : 16 ;
         flags          : 3 ;
         fragOffset     : 13 ;
@@ -158,13 +158,33 @@ header_type tcp_t {
     }
 }
 
+/* UDP */
+
 header_type udp_t {
     fields {
         srcPort : 16;
         dstPort : 16;
-        length_ : 16;
+        length  : 16;
         checksum : 16;
     }
+}
+
+/* Local metadata */
+
+header_type gtpMetadata_t {
+	fields {
+		teid : 32;
+	}
+}
+
+header_type arpMetadata_t {
+	fields {
+		ethSrc		 : 48;
+		senderHA     : 48;  /* ha = hardware address */ 
+		senderIP     : 32;
+		targetHA     : 48;
+		targetIP     : 32;
+	}
 }
 
 
