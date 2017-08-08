@@ -101,7 +101,8 @@ table l3_fib {
 			/* vlan reads is it optional?? why is it needed?? */
 	}
 	actions {
-			set_next_hop;
+			set_next_hop; /* here the action is for already existing outer ethernet header
+			should we consider the first stage where the outer field is created ?*/
 	}
 }
 
