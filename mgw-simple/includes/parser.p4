@@ -36,6 +36,7 @@ header udp_t udp;
 
 metadata gtpMetadata_t gtpMetadata;
 metadata arpMetadata_t arpMetadata;
+metadata routingMetadata_t routingMetadata;
 
 /* Parsing */
 

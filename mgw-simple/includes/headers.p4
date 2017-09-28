@@ -174,6 +174,7 @@ header_type udp_t {
 header_type gtpMetadata_t {
 	fields {
 		teid : 32;
+		color : 8;
 	}
 }
 
@@ -187,6 +188,10 @@ header_type arpMetadata_t {
 	}
 }
 
-
+header_type routingMetadata_t {
+	fields {
+		nhgrp		: 8;
+	}
+}
 
 

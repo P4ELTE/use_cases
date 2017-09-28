@@ -5,6 +5,7 @@
 #define MAC_LEARN_RECEIVER 1024
 #define ARP_LEARN_RECEIVER 1025
 #define OWN_MAC 00:11:22:33:44:55 /* TODO: check the format */
+#define BCAST_MAC FF:FF:FF:FF:FF:FF 
 
 /* Digest definitions */
 
@@ -20,6 +21,14 @@ field_list arp_learn_digest {
     arp.targetIP;
 }
 
+/* Meters for marking packets */
+
+meter teid_meter {
+	type : bytes;
+	result : gtpMetadata.color;
+	instance_count : 256;
+}
+
 /* Action definitions */
 
 action _nop() {
@@ -31,7 +40,7 @@ action mac_learn() {
 
 action forward(port) {
     modify_field(standard_metadata.egress_port, port);
-	modify_field(ethernet.srcAddr, OWN_MAC);
+	/*modify_field(ethernet.srcAddr, OWN_MAC);*/
 }
 
 action bcast() {
@@ -74,13 +83,24 @@ action gtp_encapsulate(teid, ip) {
 	modify_field(ipv4.protocol, IP_PROTOCOL_UDP);
 	modify_field(ipv4.ttl, 255);
 	add(ipv4.totalLength, egress_metadata.payload_length, 56 ); /* IP + UDP + GTP + TEID + IP + PAYLOAD */
+	
+	modify_field(gtpMetadata.teid, teid);
 }
 
 action gtp_decapsulate() {
 	copy_header(ipv4, innerIpv4);
+	modify_field(gtpMetadata.teid, gtpTeid.teid);
 	remove_header(udp);
 	remove_header(gtp);
 	remove_header(gtpTeid);
+}
+
+action apply_meter(mid) {
+	execute_meter( teid_meter, mid, gtpMetadata.color );
+}
+
+action set_nhgrp(nhgrp) {
+	modify_field(routingMetadata.nhgrp, nhgrp);
 }
 
 table smac {
@@ -117,4 +137,48 @@ table ue_selector {
 	size : 10000;
 }
 
+table teid_rate_limiter {
+	reads {
+		gtpMetadata.teid : exact;
+	}
+	actions { apply_meter; }
+	size : 256;
+}
 
+table m_filter {
+    reads {
+        gtpMetadata.color : exact;
+    }
+    actions { _drop; _nop; }	
+    size: 8;
+}
+
+table ipv4_lpm {
+	reads {
+		ipv4.dstAddr : lpm;
+	}
+	actions { set_nhgrp; _drop; }
+	size: 256;
+}
+
+control ingress {
+	apply(smac);
+	apply(dmac);
+	if ( ethernet.dstAddr == OWN_MAC or ethernet.dstAddr == BCAST_MAC )
+	{
+		if ( valid(arp) ) {
+			apply(arp_lookup);
+		}
+		else
+		{
+			apply(ue_selector);
+			apply(teid_rate_limiter);
+			apply(m_filter);
+			apply(ipv4_lpm);
+		}
+	}
+}
+
+control egress {
+	
+}
