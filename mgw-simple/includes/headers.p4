@@ -122,11 +122,11 @@ header_type gtpv1Optional_t {
 
 header_type gtpv1ExtensionHdr_t {
 	fields {
-		length		: 8; /* length in 4-octet units */
+		plength		: 8; /* length in 4-octet units */
 		contents	: *; /* TODO: check if T4P4S supports this */
 		nextExtHdrType	: 8;
 	}
-	length 		: ( length << 2 );
+	length 		: ( plength << 2 );
 	max_length 	:  128; /* TODO: ??? */
 }
 
@@ -164,7 +164,7 @@ header_type udp_t {
     fields {
         srcPort : 16;
         dstPort : 16;
-        length  : 16;
+        plength  : 16;
         checksum : 16;
     }
 }

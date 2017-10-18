@@ -108,6 +108,11 @@ parser parse_teid {
 	}
 }
 
+parser parse_gtpv2 {
+	extract( gtpv2Ending ); // Not used in this UC
+	return ingress;
+}
+
 parser parse_gtpv1optional {
 	extract( gtpv1Optional );
 	return parse_inner; /* TODO: nexthdr should be handled !!! */
@@ -123,7 +128,7 @@ field_list ipv4_checksum_list {
 		ipv4.version;
 		ipv4.ihl;
 		ipv4.diffserv;
-		ipv4.totalLen;
+		ipv4.totalLength;
 		ipv4.identification;
 		ipv4.flags;
 		ipv4.fragOffset;
@@ -148,7 +153,7 @@ field_list innerIpv4_checksum_list {
         innerIpv4.version;
         innerIpv4.ihl;
         innerIpv4.diffserv;
-        innerIpv4.totalLen;
+        innerIpv4.totalLength;
         innerIpv4.identification;
         innerIpv4.flags;
         innerIpv4.fragOffset;
@@ -167,6 +172,6 @@ field_list_calculation innerIpv4_checksum {
 }
 
 calculated_field innerIpv4.hdrChecksum {
-    verify innerIpv4_checksum if (inner_ipv4.ihl == 5);
-    update innerIpv4_checksum if (inner_ipv4.ihl == 5);
+    verify innerIpv4_checksum; // if (inner_ipv4.ihl == 5);
+    update innerIpv4_checksum; // if (inner_ipv4.ihl == 5);
 }

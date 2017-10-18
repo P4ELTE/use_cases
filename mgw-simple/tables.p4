@@ -1,11 +1,15 @@
 /* L2 forwarding - components */
 
+#include "includes/headers.p4"
+#include "includes/parser.p4"
+
 /* Defines */
 
 #define MAC_LEARN_RECEIVER 1024
 #define ARP_LEARN_RECEIVER 1025
-#define OWN_MAC 00:11:22:33:44:55 /* TODO: check the format */
-#define BCAST_MAC FF:FF:FF:FF:FF:FF 
+#define OWN_MAC 0x001122334455 /* TODO: check the format */
+#define BCAST_MAC 0xFFFFFFFFFFFF
+#define GW_IP 0xAABBCCDD 
 
 /* Digest definitions */
 
@@ -32,6 +36,10 @@ meter teid_meter {
 /* Action definitions */
 
 action _nop() {
+}
+
+action _drop() {
+	drop();
 }
 
 action mac_learn() {
@@ -70,19 +78,19 @@ action gtp_encapsulate(teid, ip) {
 	modify_field(udp.srcPort, GTP_UDP_PORT);
 	modify_field(udp.dstPort, GTP_UDP_PORT); /* TODO: is the same port used for UL and DL??? */
 	modify_field(udp.checksum, 0);
-	add(udp.length, egress_metadata.payload_length, 36); /* TODO: should be handled in T4P4S */
+	//add(udp.plength, egress_metadata.payload_length, 36); /* TODO: should be handled in T4P4S */
 	
 	modify_field(gtpTeid.teid, teid); /* GTPv1-U */
 	modify_field(gtp.version, 1);
 	modify_field(gtp.pFlag, 1);
 	modify_field(gtp.messageType, 255); /* TODO: clarify what should be here ;255 = G-PDU */
-	add(gtp.messageLength, egress_metadata.payload_length, 20);
+	//add(gtp.messageLength, egress_metadata.payload_length, 20);
 	
 	modify_field(ipv4.srcAddr, GW_IP);
-	modify_field(ipv4.dtsAddr, ip);
+	modify_field(ipv4.dstAddr, ip);
 	modify_field(ipv4.protocol, IP_PROTOCOL_UDP);
 	modify_field(ipv4.ttl, 255);
-	add(ipv4.totalLength, egress_metadata.payload_length, 56 ); /* IP + UDP + GTP + TEID + IP + PAYLOAD */
+	//add(ipv4.totalLength, egress_metadata.payload_length, 56 ); /* IP + UDP + GTP + TEID + IP + PAYLOAD */
 	
 	modify_field(gtpMetadata.teid, teid);
 }
@@ -164,7 +172,7 @@ table ipv4_lpm {
 control ingress {
 	apply(smac);
 	apply(dmac);
-	if ( ethernet.dstAddr == OWN_MAC or ethernet.dstAddr == BCAST_MAC )
+	if ( (ethernet.dstAddr == OWN_MAC) or (ethernet.dstAddr == BCAST_MAC) )
 	{
 		if ( valid(arp) ) {
 			apply(arp_lookup);
